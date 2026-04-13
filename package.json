@@ -8,11 +8,14 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
+    "preview": "npm run build && wrangler dev",
     "astro": "astro",
-    "ingest": "node scripts/ingest.mjs"
+    "ingest": "node scripts/ingest.mjs",
+    "deploy": "npm run build && wrangler deploy",
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "11",
     "@astrojs/rss": "^4.0.7",
     "@astrojs/tailwind": "^5.1.2",
     "astro": "^4.16.7",
@@ -23,6 +26,7 @@
     "@mozilla/readability": "^0.5.0",
     "jsdom": "^25.0.1",
     "rss-parser": "^3.13.0",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "wrangler": "^4.81.1"
   }
 }
