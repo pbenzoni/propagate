@@ -1,0 +1,135 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+const allArticles = (await getCollection('articles'))
+  .filter((a) => !a.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const authors = await getCollection('authors');
+const authorName = (slug: string) =>
+  authors.find((a) => a.slug === slug)?.data.name ?? slug;
+
+// Find the newest pair of articles that share the same sourceUrl but one is
+// liberal and one is conservative — this is the whole point of the demo.
+function findPair() {
+  const bySource = new Map<string, typeof allArticles>();
+  for (const a of allArticles) {
+    const arr = bySource.get(a.data.sourceUrl) ?? [];
+    arr.push(a);
+    bySource.set(a.data.sourceUrl, arr);
+  }
+  for (const [, group] of bySource) {
+    const lib = group.find((g) => g.data.section === 'liberal');
+    const con = group.find((g) => g.data.section === 'conservative');
+    if (lib && con) return { lib, con };
+  }
+  return null;
+}
+const pair = findPair();
+
+const lead = allArticles[0];
+const leadAuthor = lead ? authorName(lead.data.author) : '';
+const LeadContent = lead ? (await lead.render()).Content : null;
+
+const rest = allArticles.filter((a) => {
+  if (a.slug === lead?.slug) return false;
+  if (pair && (a.slug === pair.lib.slug || a.slug === pair.con.slug)) return false;
+  return true;
+}).slice(0, 12);
+---
+<BaseLayout title="Front Page">
+
+  <section class="mb-10">
+    <h2 class="sr-only">About this demo</h2>
+    <div class="rule-double my-2"></div>
+    <div class="bg-newsprintDark/40 border-2 border-inkblack p-5 md:p-6 font-body">
+      <p class="font-display font-black text-xl md:text-2xl uppercase tracking-widest mb-2">
+        About this demo — read this first
+      </p>
+      <p>
+        <strong>The Propagate Post</strong> is a research demonstration built by the
+        <a href="https://www.isdglobal.org/" class="underline" rel="noopener">Institute for Strategic Dialogue</a>
+        to show — concretely, in working code — how a single person with an AI coding agent can stand up an
+        automated, audience-targeted content-laundering pipeline in roughly thirty minutes. Every article on this
+        site is a language-model rewrite of an RT.com RSS item. Every article carries a full provenance box with
+        the original headline, source URL, rewrite model, and the exact system prompt used.
+        <a href="/about" class="underline">Read the full explanation &rarr;</a>
+      </p>
+    </div>
+  </section>
+
+  {lead && LeadContent && (
+    <section class="mb-12">
+      <div class="rule-thick mb-2"></div>
+      <p class="text-xs font-slab uppercase tracking-widest">Today's Lead Story</p>
+      <h2 class="font-display text-4xl md:text-6xl font-black leading-none mt-1">
+        <a href={`/articles/${lead.slug}`} class="hover:underline">{lead.data.title}</a>
+      </h2>
+      {lead.data.dek && <p class="italic text-lg mt-2">{lead.data.dek}</p>}
+      <p class="font-slab uppercase text-xs tracking-widest mt-2">
+        By <a href={`/authors/${lead.data.author}`} class="underline">{leadAuthor}</a>
+        &nbsp;·&nbsp; {lead.data.section.toUpperCase()} SECTION
+      </p>
+      <div class="prose-news dropcap newsprint-columns mt-4 text-[1.05rem]">
+        <LeadContent />
+      </div>
+      <p class="mt-3 text-sm">
+        <a href={`/articles/${lead.slug}`} class="underline font-slab uppercase tracking-widest text-xs">
+          Continue reading, including provenance &rarr;
+        </a>
+      </p>
+    </section>
+  )}
+
+  {pair && (
+    <section class="mb-12">
+      <div class="rule-thick mb-2"></div>
+      <p class="text-xs font-slab uppercase tracking-widest">
+        One source, two audiences — the single fact pattern the pipeline is built to demonstrate
+      </p>
+      <h2 class="font-display text-3xl md:text-4xl font-black mt-1">
+        Same Story, Two Inks
+      </h2>
+      <p class="italic mt-1 text-sm">
+        Both pieces below were generated from this source:
+        <a href={pair.lib.data.sourceUrl} class="underline" rel="noopener nofollow">{pair.lib.data.sourceTitle}</a>.
+      </p>
+      <div class="grid md:grid-cols-2 gap-6 mt-4 border-t border-inkblack pt-4">
+        <div class="md:border-r md:border-inkblack md:pr-6">
+          <p class="badge-section section-liberal-accent">Liberal edition</p>
+          <h3 class="font-display text-2xl md:text-3xl font-black leading-tight mt-2">
+            <a href={`/articles/${pair.lib.slug}`} class="hover:underline">{pair.lib.data.title}</a>
+          </h3>
+          {pair.lib.data.dek && <p class="italic mt-1">{pair.lib.data.dek}</p>}
+          <p class="font-slab uppercase text-xs tracking-widest mt-2">
+            By <a href={`/authors/${pair.lib.data.author}`} class="underline">{authorName(pair.lib.data.author)}</a>
+          </p>
+        </div>
+        <div>
+          <p class="badge-section section-conservative-accent">Conservative edition</p>
+          <h3 class="font-display text-2xl md:text-3xl font-black leading-tight mt-2">
+            <a href={`/articles/${pair.con.slug}`} class="hover:underline">{pair.con.data.title}</a>
+          </h3>
+          {pair.con.data.dek && <p class="italic mt-1">{pair.con.data.dek}</p>}
+          <p class="font-slab uppercase text-xs tracking-widest mt-2">
+            By <a href={`/authors/${pair.con.data.author}`} class="underline">{authorName(pair.con.data.author)}</a>
+          </p>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="mb-12">
+    <div class="rule-thick mb-2"></div>
+    <p class="text-xs font-slab uppercase tracking-widest">Recent Dispatches</p>
+    <h2 class="font-display text-3xl md:text-4xl font-black mt-1">The Rest of the Paper</h2>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-x-6 mt-4">
+      {rest.map((a) => (
+        <ArticleCard article={a} authorName={authorName(a.data.author)} compact />
+      ))}
+    </div>
+  </section>
+
+</BaseLayout>

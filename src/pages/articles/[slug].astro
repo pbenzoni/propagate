@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProvenanceBox from '../../components/ProvenanceBox.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles');
+  return articles.map((a) => ({ params: { slug: a.slug }, props: { article: a } }));
+}
+
+const { article } = Astro.props;
+const { Content } = await article.render();
+const authors = await getCollection('authors');
+const author = authors.find((a) => a.slug === article.data.author);
+
+const {
+  title, dek, section, pubDate, sourceUrl, sourceTitle,
+  sourcePublishedAt, fetchedAt, model, systemPromptHash,
+} = article.data;
+
+const accentClass = section === 'liberal' ? 'section-liberal-accent' : 'section-conservative-accent';
+const sectionLabel = section === 'liberal' ? 'THE LIBERAL LEDGER' : 'THE CONSERVATIVE CHRONICLE';
+const dateStr = pubDate.toLocaleDateString('en-US', {
+  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+});
+---
+<BaseLayout title={title} description={dek ?? title} subMasthead={sectionLabel} accent={section}>
+
+  <article class="max-w-3xl mx-auto">
+    <div class="rule-thick mb-2"></div>
+    <p class={`badge-section ${accentClass}`}>{section} section</p>
+    <h1 class="font-display text-4xl md:text-6xl font-black leading-[1.05] mt-3">{title}</h1>
+    {dek && <p class="italic text-lg md:text-xl mt-3">{dek}</p>}
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-4 text-sm font-slab uppercase tracking-widest border-y border-inkblack py-2">
+      <span>By <a href={`/authors/${article.data.author}`} class="underline">{author?.data.name ?? article.data.author}</a></span>
+      <span>{dateStr}</span>
+      <span><a href={sourceUrl} rel="noopener nofollow" class="underline">view original RT source</a></span>
+    </div>
+
+    <div class="prose-news dropcap mt-6 text-[1.08rem] leading-relaxed">
+      <Content />
+    </div>
+
+    <ProvenanceBox
+      sourceUrl={sourceUrl}
+      sourceTitle={sourceTitle}
+      sourcePublishedAt={sourcePublishedAt}
+      fetchedAt={fetchedAt}
+      model={model}
+      systemPromptHash={systemPromptHash}
+      section={section}
+    />
+
+    <p class="mt-8 text-center text-sm italic">
+      Remember: this article was written by a language model as part of a research demo.
+      It is not reporting. <a href="/about" class="underline">Why does this site exist?</a>
+    </p>
+  </article>
+
+</BaseLayout>

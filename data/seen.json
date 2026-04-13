@@ -1,0 +1,4 @@
+{
+  "_description": "Ledger of RT.com feed items already ingested. Keyed by GUID or link. Committed back to the repo by the ingest GitHub Action to give a full audit trail.",
+  "seen": {}
+}

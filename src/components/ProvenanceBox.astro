@@ -1,0 +1,47 @@
+---
+import { SYSTEM_PROMPTS } from '../lib/prompts.mjs';
+interface Props {
+  sourceUrl: string;
+  sourceTitle: string;
+  sourcePublishedAt?: Date;
+  fetchedAt: Date;
+  model: string;
+  systemPromptHash: string;
+  section: 'liberal' | 'conservative';
+}
+const props = Astro.props;
+const fmt = (d?: Date) => d ? d.toISOString() : 'unknown';
+const promptText = SYSTEM_PROMPTS[props.section] ?? '(prompt not available in this build)';
+---
+<aside class="mt-10 border-4 border-double border-inkblack bg-newsprintDark/60 p-5 text-sm">
+  <details open>
+    <summary class="font-display text-lg font-black uppercase tracking-widest cursor-pointer">
+      Provenance — How this article was made
+    </summary>
+    <div class="mt-3 space-y-2">
+      <p>
+        This article was <strong>not</strong> written by a human. It is a language-model rewrite of a
+        feed item from RT.com, published inside a research demo at ISD. Everything below is the full
+        audit trail so you can verify what was done, by what, and from what source.
+      </p>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>Original headline:</strong> {props.sourceTitle}</li>
+        <li><strong>Original URL:</strong> <a href={props.sourceUrl} rel="noopener nofollow" class="underline break-all">{props.sourceUrl}</a></li>
+        <li><strong>Source published at:</strong> {fmt(props.sourcePublishedAt)}</li>
+        <li><strong>Fetched at:</strong> {fmt(props.fetchedAt)}</li>
+        <li><strong>Rewrite model:</strong> <code>{props.model}</code></li>
+        <li><strong>System prompt hash:</strong> <code>{props.systemPromptHash}</code></li>
+        <li><strong>Target audience:</strong> US {props.section}</li>
+      </ul>
+      <div>
+        <p class="font-bold mt-3">Exact system prompt used:</p>
+        <pre class="whitespace-pre-wrap text-xs bg-newsprint border border-inkblack p-3 mt-1 font-mono">{promptText}</pre>
+      </div>
+      <p class="italic">
+        If you arrived here thinking this was real news, please read
+        <a href="/about" class="underline">/about</a>. If you work in trust &amp; safety or policy and
+        want to use this demo in training or research, the code is open.
+      </p>
+    </div>
+  </details>
+</aside>

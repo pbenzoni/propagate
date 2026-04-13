@@ -1,0 +1,50 @@
+---
+import '../styles/global.css';
+import DemoBanner from '../components/DemoBanner.astro';
+import Masthead from '../components/Masthead.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  subMasthead?: string;
+  accent?: 'liberal' | 'conservative' | null;
+}
+
+const {
+  title,
+  description = 'A research demo by ISD: an automated AI propaganda pipeline, published with full provenance. Not journalism.',
+  subMasthead,
+  accent = null,
+} = Astro.props;
+
+// Default to noindex unless DEMO_NOINDEX explicitly set to "false".
+// A fresh clone should NEVER accidentally enter search indexes.
+const noindex = (import.meta.env.DEMO_NOINDEX ?? 'true') !== 'false';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} — The Propagate Post (ISD research demo)</title>
+    <meta name="description" content={description} />
+    <meta name="generator" content="propagate — ISD red-team research demo" />
+    <meta name="x-research-demo" content="This site is a labeled research demonstration of AI-rewritten propaganda. Not journalism." />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Roboto+Slab:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <DemoBanner />
+    <Masthead subMasthead={subMasthead} accent={accent} />
+    <main class="flex-1 px-4 md:px-8 py-6 max-w-7xl mx-auto w-full">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

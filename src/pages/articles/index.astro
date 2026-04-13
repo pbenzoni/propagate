@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+const articles = (await getCollection('articles'))
+  .filter((a) => !a.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const authors = await getCollection('authors');
+const authorName = (slug: string) => authors.find((a) => a.slug === slug)?.data.name ?? slug;
+---
+<BaseLayout title="All Articles">
+  <section class="max-w-5xl mx-auto">
+    <div class="rule-thick mb-2"></div>
+    <h1 class="font-display text-4xl md:text-5xl font-black">All Dispatches</h1>
+    <p class="italic mt-2">
+      Every article here is a language-model rewrite of an RT.com feed item, published as part of a
+      research demo. Use the filters below, or visit a
+      <a href="/liberal" class="underline">liberal</a> /
+      <a href="/conservative" class="underline">conservative</a> section page.
+    </p>
+
+    <div class="mt-4 flex flex-wrap gap-2 text-xs font-slab uppercase tracking-widest" data-filter-bar>
+      <button data-filter="all" class="badge-section bg-inkblack text-newsprint">All</button>
+      <button data-filter="liberal" class="badge-section section-liberal-accent">Liberal</button>
+      <button data-filter="conservative" class="badge-section section-conservative-accent">Conservative</button>
+    </div>
+
+    <div class="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-x-6" data-article-grid>
+      {articles.map((a) => (
+        <div data-section={a.data.section} data-author={a.data.author}>
+          <ArticleCard article={a} authorName={authorName(a.data.author)} compact />
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <script is:inline>
+    const buttons = document.querySelectorAll('[data-filter]');
+    const items = document.querySelectorAll('[data-article-grid] > [data-section]');
+    buttons.forEach((b) => b.addEventListener('click', () => {
+      const f = b.getAttribute('data-filter');
+      items.forEach((el) => {
+        el.style.display = (f === 'all' || el.getAttribute('data-section') === f) ? '' : 'none';
+      });
+    }));
+  </script>
+</BaseLayout>

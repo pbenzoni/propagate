@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --newsprint: #f4ecd8;
+    --ink: #15130f;
+  }
+
+  html {
+    background-color: var(--newsprint);
+    color: var(--ink);
+  }
+
+  body {
+    font-family: 'Libre Caslon Text', 'Crimson Pro', Georgia, serif;
+    background-color: var(--newsprint);
+    background-image:
+      radial-gradient(rgba(21, 19, 15, 0.035) 1px, transparent 1px),
+      radial-gradient(rgba(21, 19, 15, 0.02) 1px, transparent 1px);
+    background-size: 3px 3px, 7px 7px;
+    background-position: 0 0, 1px 1px;
+    color: var(--ink);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', 'Old Standard TT', Georgia, serif;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer components {
+  .rule-thick {
+    border-top: 4px double #15130f;
+  }
+  .rule-thin {
+    border-top: 1px solid #15130f;
+  }
+  .rule-double {
+    border-top: 3px double #15130f;
+    border-bottom: 1px solid #15130f;
+    padding: 0.25rem 0;
+  }
+
+  .dropcap::first-letter {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 900;
+    float: left;
+    font-size: 4.5rem;
+    line-height: 0.85;
+    padding-right: 0.5rem;
+    padding-top: 0.4rem;
+  }
+
+  .newsprint-columns {
+    column-count: 1;
+    column-gap: 2rem;
+    column-rule: 1px solid rgba(21, 19, 15, 0.25);
+  }
+  @media (min-width: 768px) {
+    .newsprint-columns { column-count: 2; }
+  }
+
+  .warning-stripe {
+    background: repeating-linear-gradient(
+      45deg,
+      #f6d24a,
+      #f6d24a 14px,
+      #15130f 14px,
+      #15130f 28px
+    );
+  }
+
+  .section-liberal-accent { color: #9a1f1f; border-color: #9a1f1f; }
+  .section-conservative-accent { color: #1a3a6b; border-color: #1a3a6b; }
+
+  .badge-section {
+    display: inline-block;
+    padding: 0.1rem 0.5rem;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border: 1px solid currentColor;
+  }
+
+  .prose-news p {
+    margin-bottom: 1rem;
+    text-align: justify;
+    hyphens: auto;
+  }
+  .prose-news p:first-of-type {
+    /* drop cap applied via .dropcap on the parent */
+  }
+  .prose-news blockquote {
+    border-left: 3px double #15130f;
+    padding-left: 1rem;
+    font-style: italic;
+    margin: 1.5rem 0;
+  }
+  .prose-news a {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+  }
+}

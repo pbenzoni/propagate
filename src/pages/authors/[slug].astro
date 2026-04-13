@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const authors = await getCollection('authors');
+  return authors.map((a) => ({ params: { slug: a.slug }, props: { author: a } }));
+}
+
+const { author } = Astro.props;
+const articles = (await getCollection('articles'))
+  .filter((a) => !a.data.draft && a.data.author === author.slug)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const accentClass = author.data.section === 'liberal' ? 'section-liberal-accent' : 'section-conservative-accent';
+---
+<BaseLayout title={author.data.name}>
+  <section class="max-w-3xl mx-auto">
+    <div class="rule-thick mb-2"></div>
+    <p class={`badge-section ${accentClass}`}>{author.data.section} section</p>
+    <h1 class="font-display text-4xl md:text-5xl font-black mt-2">{author.data.name}</h1>
+    <p class="italic text-lg mt-1">{author.data.beat}</p>
+
+    <div class="flex gap-4 items-start mt-4 border-y border-inkblack py-4">
+      {author.data.avatar && <img src={author.data.avatar} alt={author.data.name} class="w-28 h-28 border border-inkblack shrink-0" />}
+      <p>{author.data.bio}</p>
+    </div>
+
+    <div class="bg-newsprintDark/50 border-2 border-inkblack p-4 mt-6">
+      <p class="font-display font-black uppercase tracking-widest text-sm">This is a fictional byline</p>
+      <p class="text-sm mt-1">
+        {author.data.name} is not a real person. They are a persona attached to articles that were
+        rewritten by a language model from RT.com feed items, as part of a research demo by ISD.
+        Do not share articles by this byline as news. See <a href="/about" class="underline">/about</a>.
+      </p>
+    </div>
+
+    <h2 class="font-display text-2xl font-black mt-10 uppercase tracking-widest border-y border-inkblack py-1">Articles</h2>
+    <div class="mt-4">
+      {articles.length === 0
+        ? <p class="italic">No articles yet.</p>
+        : articles.map((a) => <ArticleCard article={a} authorName={author.data.name} />)
+      }
+    </div>
+  </section>
+</BaseLayout>

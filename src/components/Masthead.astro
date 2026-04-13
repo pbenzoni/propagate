@@ -1,0 +1,39 @@
+---
+interface Props {
+  subMasthead?: string;
+  accent?: 'liberal' | 'conservative' | null;
+}
+const { subMasthead, accent = null } = Astro.props;
+const today = new Date().toLocaleDateString('en-US', {
+  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+});
+const accentClass =
+  accent === 'liberal' ? 'section-liberal-accent' :
+  accent === 'conservative' ? 'section-conservative-accent' : '';
+---
+<header class="border-b-4 border-double border-inkblack pt-4 pb-2 px-4 md:px-8">
+  <div class="flex justify-between items-center text-xs md:text-sm uppercase tracking-widest font-slab">
+    <span>Vol. I · No. 1</span>
+    <span>{today}</span>
+    <span>Price: Free · Credibility: Zero</span>
+  </div>
+  <h1 class="font-display text-center text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mt-2">
+    <a href="/">The Propagate Post</a>
+  </h1>
+  <p class="text-center italic text-sm md:text-base mt-1">
+    &ldquo;All the news that fits, regardless of where it came from.&rdquo;
+  </p>
+  {subMasthead && (
+    <p class={`text-center mt-3 font-display text-2xl md:text-3xl uppercase tracking-[0.2em] border-y border-inkblack py-2 ${accentClass}`}>
+      — {subMasthead} —
+    </p>
+  )}
+  <nav class="flex flex-wrap justify-center gap-4 md:gap-6 mt-3 font-slab uppercase text-xs md:text-sm tracking-widest">
+    <a href="/" class="hover:underline">Front Page</a>
+    <a href="/articles" class="hover:underline">All Articles</a>
+    <a href="/liberal" class="hover:underline section-liberal-accent">Liberal</a>
+    <a href="/conservative" class="hover:underline section-conservative-accent">Conservative</a>
+    <a href="/authors" class="hover:underline">Authors</a>
+    <a href="/about" class="hover:underline">About the Demo</a>
+  </nav>
+</header>

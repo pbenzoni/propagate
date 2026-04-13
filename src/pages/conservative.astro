@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+const articles = (await getCollection('articles'))
+  .filter((a) => !a.data.draft && a.data.section === 'conservative')
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const authors = (await getCollection('authors')).filter((a) => a.data.section === 'conservative');
+const authorName = (slug: string) => authors.find((a) => a.slug === slug)?.data.name ?? slug;
+---
+<BaseLayout title="The Conservative Chronicle" subMasthead="THE CONSERVATIVE CHRONICLE" accent="conservative">
+  <section class="max-w-5xl mx-auto">
+    <div class="rule-thick mb-2"></div>
+    <p class="italic">
+      The conservative edition of this research demo. Articles are language-model rewrites from RT.com,
+      tuned to US conservative framings and vocabulary. Every piece carries a provenance box.
+    </p>
+
+    <h2 class="font-display text-2xl font-black mt-8 uppercase tracking-widest border-y border-inkblack py-1">Our Bylines</h2>
+    <ul class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+      {authors.map((a) => (
+        <li class="text-center">
+          {a.data.avatar && <img src={a.data.avatar} alt={a.data.name} class="w-20 h-20 mx-auto border border-inkblack" />}
+          <a href={`/authors/${a.slug}`} class="font-display font-bold underline block mt-2">{a.data.name}</a>
+          <p class="text-xs italic">{a.data.beat}</p>
+        </li>
+      ))}
+    </ul>
+
+    <h2 class="font-display text-2xl font-black mt-10 uppercase tracking-widest border-y border-inkblack py-1">Recent</h2>
+    <div class="grid md:grid-cols-2 gap-x-6 mt-4">
+      {articles.map((a) => <ArticleCard article={a} authorName={authorName(a.data.author)} compact />)}
+    </div>
+  </section>
+</BaseLayout>

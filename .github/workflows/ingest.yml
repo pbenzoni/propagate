@@ -1,0 +1,58 @@
+name: ingest
+
+# Scheduled ingest pipeline for the Propagate research demo.
+#
+# Runs every 3 hours, and on manual dispatch. For each new item in the
+# RT.com RSS feed, it writes two Markdown files (one liberal, one
+# conservative) into src/content/articles/ and commits them back to the
+# repo. Committing back is intentional: the full audit trail of what the
+# pipeline has ever produced is a feature of the research framing.
+
+on:
+  schedule:
+    - cron: '0 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ingest
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL || 'claude-sonnet-4-5' }}
+          SOURCE_RSS: ${{ vars.SOURCE_RSS || 'https://www.rt.com/rss/news/' }}
+          MAX_NEW_PER_RUN: ${{ vars.MAX_NEW_PER_RUN || '5' }}
+        run: npm run ingest
+
+      - name: Commit and push new articles
+        run: |
+          git config user.name "propagate-bot"
+          git config user.email "propagate-bot@users.noreply.github.com"
+          git add src/content/articles data/seen.json
+          if git diff --cached --quiet; then
+            echo "no new articles"
+            exit 0
+          fi
+          COUNT=$(git diff --cached --name-only -- 'src/content/articles/*.md' | wc -l)
+          git commit -m "ingest: +${COUNT} articles ($(date -u +%Y-%m-%dT%H:%M:%SZ))"
+          git push

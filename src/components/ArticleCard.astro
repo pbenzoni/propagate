@@ -1,0 +1,27 @@
+---
+import type { CollectionEntry } from 'astro:content';
+interface Props {
+  article: CollectionEntry<'articles'>;
+  authorName?: string;
+  compact?: boolean;
+}
+const { article, authorName, compact = false } = Astro.props;
+const { title, dek, section, pubDate, sourceUrl, author } = article.data;
+const accentClass = section === 'liberal' ? 'section-liberal-accent' : 'section-conservative-accent';
+const dateStr = pubDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+---
+<article class={`border-t border-inkblack pt-3 pb-4 ${compact ? '' : 'md:pt-4'}`}>
+  <div class="flex items-center gap-2 mb-1 text-xs uppercase tracking-widest font-slab">
+    <span class={`badge-section ${accentClass}`}>{section}</span>
+    <span>{dateStr}</span>
+  </div>
+  <h3 class={`font-display font-black leading-tight ${compact ? 'text-xl' : 'text-2xl md:text-3xl'}`}>
+    <a href={`/articles/${article.slug}`} class="hover:underline">{title}</a>
+  </h3>
+  {dek && <p class="italic mt-1 text-sm md:text-base">{dek}</p>}
+  <p class="text-xs mt-2 font-slab uppercase tracking-widest">
+    By <a href={`/authors/${author}`} class="underline">{authorName ?? author}</a>
+    &nbsp;·&nbsp;
+    <a href={sourceUrl} rel="noopener nofollow" class="underline">view original RT source</a>
+  </p>
+</article>
