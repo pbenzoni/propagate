@@ -18,13 +18,22 @@
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Parser from 'rss-parser';
 import { JSDOM } from 'jsdom';
 import { Readability } from '@mozilla/readability';
 import Anthropic from '@anthropic-ai/sdk';
-import { SYSTEM_PROMPTS, SYSTEM_PROMPT_HASHES } from '../src/lib/prompts.mjs';
+import { SYSTEM_PROMPTS } from '../src/lib/prompts.mjs';
+
+const hashPrompt = (prompt) =>
+  'sha256:' + createHash('sha256').update(prompt).digest('hex').slice(0, 16);
+
+const SYSTEM_PROMPT_HASHES = {
+  liberal: hashPrompt(SYSTEM_PROMPTS.liberal),
+  conservative: hashPrompt(SYSTEM_PROMPTS.conservative),
+};
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

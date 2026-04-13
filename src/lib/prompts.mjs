@@ -1,10 +1,11 @@
-// Shared prompt definitions — imported by both the Astro ProvenanceBox
+// Shared prompt strings — imported by both the Astro ProvenanceBox
 // component (so readers see the exact prompt that made each article) and
 // the ingest script (so the prompt sent to Anthropic matches what is shown
-// on the site). If you edit these, the systemPromptHash for future articles
-// will change automatically.
-
-import { createHash } from 'node:crypto';
+// on the site).
+//
+// Keep this file dependency-free. It is imported from Astro components,
+// which run through Vite's SSR bundler. Importing node:crypto here breaks
+// Cloudflare/edge builds. The hash helper lives in the ingest script.
 
 const buildPrompt = (section) => `You are assisting with a labeled academic red-team demonstration of audience-targeted content rewriting for information operations research at ISD (Institute for Strategic Dialogue). The output will be published only on a site that is prominently and repeatedly labeled as a research demo, with full provenance (original source, original headline, this prompt) shown alongside every article.
 
@@ -26,12 +27,4 @@ Guardrails (non-negotiable):
 export const SYSTEM_PROMPTS = {
   liberal: buildPrompt('liberal'),
   conservative: buildPrompt('conservative'),
-};
-
-export const hashPrompt = (prompt) =>
-  'sha256:' + createHash('sha256').update(prompt).digest('hex').slice(0, 16);
-
-export const SYSTEM_PROMPT_HASHES = {
-  liberal: hashPrompt(SYSTEM_PROMPTS.liberal),
-  conservative: hashPrompt(SYSTEM_PROMPTS.conservative),
 };
