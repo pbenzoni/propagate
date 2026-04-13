@@ -1,4 +1,25 @@
 {
   "_description": "Ledger of RT.com feed items already ingested. Keyed by GUID or link. Committed back to the repo by the ingest GitHub Action to give a full audit trail.",
-  "seen": {}
+  "seen": {
+    "https://www.rt.com/news/638337-uk-pauses-handover-of-indian/": {
+      "title": "UK pauses handover of Indian Ocean islands to Mauritius amid US concerns",
+      "link": "https://www.rt.com/news/638337-uk-pauses-handover-of-indian/?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
+      "ingestedAt": "2026-04-13T14:13:03.167Z"
+    },
+    "https://www.rt.com/news/638330-trump-jesus-pope-epstein/": {
+      "title": "Trump casts himself as Jesus after attacking Pope (AI IMAGES)",
+      "link": "https://www.rt.com/news/638330-trump-jesus-pope-epstein/?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
+      "ingestedAt": "2026-04-13T14:13:24.370Z"
+    },
+    "https://www.rt.com/news/638324-pakistan-sends-troops-and-jets/": {
+      "title": "Pakistan sends troops and jets to Saudi Arabia",
+      "link": "https://www.rt.com/news/638324-pakistan-sends-troops-and-jets/?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
+      "ingestedAt": "2026-04-13T14:13:47.124Z"
+    },
+    "https://www.rt.com/news/638304-new-mossad-chief-appointed/": {
+      "title": "IDF general tied to teen psy-op case appointed next Mossad chief",
+      "link": "https://www.rt.com/news/638304-new-mossad-chief-appointed/?utm_source=rss&utm_medium=rss&utm_campaign=RSS",
+      "ingestedAt": "2026-04-13T14:14:12.376Z"
+    }
+  }
 }
