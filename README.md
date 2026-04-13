@@ -1,4 +1,4 @@
-# propagate — The Propagate Post
+# propagate — The Propaganda Post
 
 **A research demonstration by the [Institute for Strategic Dialogue (ISD)](https://www.isdglobal.org/) of how cheaply and quickly a single person with an AI coding agent can stand up an automated, audience-targeted content-laundering pipeline. This is not a newspaper. It is a threat model with a deploy button.**
 
@@ -8,7 +8,7 @@ Live: [propaganda.onl](https://propaganda.onl) &nbsp;·&nbsp; Repo: [github.com/
 
 ## What this is
 
-The Propagate Post is the companion artifact to an ISD conference talk on spinning up an information operation in roughly thirty minutes. Every three hours, a GitHub Action pulls the RT.com RSS feed, dedupes it, and for each new item calls the Anthropic API twice — once to rewrite the story for a US liberal audience, once for a US conservative audience. The two rewrites are attached to transparently fictional bylines (Headlines McVirtuesignal, Chadwick Freedomeagle, etc.), committed to the repo as Markdown files, and built into a static site.
+The Propaganda Post is the companion artifact to an ISD conference talk on spinning up an information operation in roughly thirty minutes. Every three hours, a GitHub Action pulls the RT.com RSS feed, dedupes it, and for each new item calls the Anthropic API twice — once to rewrite the story for a US liberal audience, once for a US conservative audience. The two rewrites are attached to transparently fictional bylines (Headlines McVirtuesignal, Chadwick Freedomeagle, etc.), committed to the repo as Markdown files, and built into a static site.
 
 The home page deliberately pairs the two rewrites side-by-side so readers can see the single-source → two-audiences pattern at work. Every article page shows a **Provenance** box with the original RT.com URL, the original headline, the fetch timestamp, the model, and the exact system prompt used to produce the rewrite.
 
