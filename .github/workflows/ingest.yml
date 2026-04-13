@@ -41,7 +41,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL || 'claude-sonnet-4-5' }}
           SOURCE_RSS: ${{ vars.SOURCE_RSS || 'https://www.rt.com/rss/news/' }}
-          MAX_NEW_PER_RUN: ${{ vars.MAX_NEW_PER_RUN || '5' }}
+          MAX_NEW_PER_RUN: ${{ vars.MAX_NEW_PER_RUN || '4' }}
         run: npm run ingest
 
       - name: Commit and push new articles
